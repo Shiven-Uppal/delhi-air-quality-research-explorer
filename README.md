@@ -1,4 +1,6 @@
-# Delhi Air Quality Research Explorer
+# Delhi Air Observatory
+
+*PM₂.₅ Forecasting Research Explorer*
 
 An interactive public-facing research explorer for six-hour PM₂.₅ forecasting across 31 Delhi monitoring stations.
 
@@ -24,3 +26,7 @@ npm run dev
 ## Stack
 
 React, TypeScript, Vite, and Recharts.
+
+## Visual language
+
+The interface uses midnight blue, atmospheric slate, and ice-blue for research visualisation. Official AQI category colours are deliberately reserved for values expressed as AQI, rather than raw PM₂.₅ concentrations.
