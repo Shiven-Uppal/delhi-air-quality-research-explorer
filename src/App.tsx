@@ -78,12 +78,6 @@ function GlobeIntro({ leaving, onEnter }: { leaving: boolean; onEnter: () => voi
   </section>
 }
 
-function latLng(lat: number, lng: number, radius = 1.025) {
-  const phi = (90 - lat) * (Math.PI / 180);
-  const theta = (lng + 180) * (Math.PI / 180);
-  return new THREE.Vector3(-radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.sin(theta));
-}
-
 class GlobeCanvasBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
@@ -92,7 +86,6 @@ class GlobeCanvasBoundary extends Component<{ children: ReactNode }, { failed: b
 
 function GlobeScene({ zooming }: { zooming: boolean }) {
   const group = useRef<THREE.Group>(null);
-  const marker = latLng(28.6139, 77.2090);
   useFrame((state, delta) => {
     if (!group.current) return;
     group.current.rotation.y += delta * (zooming ? 0.02 : 0.075);
@@ -106,8 +99,6 @@ function GlobeScene({ zooming }: { zooming: boolean }) {
       <mesh><sphereGeometry args={[1, 64, 64]}/><meshStandardMaterial color="#1b403a" roughness={.72} metalness={.08}/></mesh>
       <mesh scale={1.006}><sphereGeometry args={[1, 28, 18]}/><meshBasicMaterial color="#a9c7ae" wireframe transparent opacity={.18}/></mesh>
       <mesh scale={1.045}><sphereGeometry args={[1, 64, 64]}/><meshBasicMaterial color="#a7dec0" transparent opacity={.07} side={THREE.BackSide}/></mesh>
-      <mesh position={marker}><sphereGeometry args={[.034, 18, 18]}/><meshBasicMaterial color="#f0713f"/></mesh>
-      <mesh position={marker.clone().multiplyScalar(.998)}><ringGeometry args={[.07, .078, 32]}/><meshBasicMaterial color="#f0713f" transparent opacity={.72} side={THREE.DoubleSide}/></mesh>
     </group>
   </>;
 }
