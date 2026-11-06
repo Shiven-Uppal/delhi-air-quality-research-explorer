@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react';
+import { Component, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 import { Area, CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { scenarios, stations } from './data/stations';
 
@@ -64,7 +66,7 @@ function GlobeIntro({ leaving, onEnter }: { leaving: boolean; onEnter: () => voi
     <header className="intro-nav"><span><i/> DELHI AIR OBSERVATORY</span><button type="button" onClick={onEnter}>Skip intro <b>↓</b></button></header>
     <div className="globe-stage" aria-hidden="true">
       <div className="orbit orbit-one"/><div className="orbit orbit-two"/>
-      <div className="globe"><div className="globe-grid"/><div className="continent asia"/><div className="continent india"/><div className="delhi-marker"><span/><em>Delhi</em></div></div>
+      <div className="globe-canvas"><GlobeCanvasBoundary><Canvas camera={{ position: [0, 0, 5.3], fov: 42 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}><GlobeScene zooming={leaving}/></Canvas></GlobeCanvasBoundary></div><span className="globe-label">Delhi, India</span>
     </div>
     <div className="intro-copy">
       <p className="intro-kicker">PM₂.₅ · DELHI · RESEARCH EXPLORER</p>
@@ -74,6 +76,40 @@ function GlobeIntro({ leaving, onEnter }: { leaving: boolean; onEnter: () => voi
     </div>
     <p className="intro-caption">31 monitoring sites · six-hour forecasting study · illustrative data</p>
   </section>
+}
+
+function latLng(lat: number, lng: number, radius = 1.025) {
+  const phi = (90 - lat) * (Math.PI / 180);
+  const theta = (lng + 180) * (Math.PI / 180);
+  return new THREE.Vector3(-radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.sin(theta));
+}
+
+class GlobeCanvasBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() { return this.state.failed ? <div className="globe-fallback" aria-hidden="true"><i/><b/></div> : this.props.children; }
+}
+
+function GlobeScene({ zooming }: { zooming: boolean }) {
+  const group = useRef<THREE.Group>(null);
+  const marker = latLng(28.6139, 77.2090);
+  useFrame((state, delta) => {
+    if (!group.current) return;
+    group.current.rotation.y += delta * (zooming ? 0.02 : 0.075);
+    group.current.rotation.x = THREE.MathUtils.damp(group.current.rotation.x, zooming ? -0.12 : 0.06, 2.2, delta);
+    state.camera.position.z = THREE.MathUtils.damp(state.camera.position.z, zooming ? 2.5 : 5.3, 2.4, delta);
+    state.camera.lookAt(0, 0, 0);
+  });
+  return <>
+    <ambientLight intensity={1.4}/><directionalLight position={[-3, 2, 4]} intensity={2.1} color="#dbe8d9"/><pointLight position={[3, -2, 2]} intensity={3.2} color="#e05a2c"/>
+    <group ref={group} rotation={[0.06, -1.7, 0]}>
+      <mesh><sphereGeometry args={[1, 64, 64]}/><meshStandardMaterial color="#1b403a" roughness={.72} metalness={.08}/></mesh>
+      <mesh scale={1.006}><sphereGeometry args={[1, 28, 18]}/><meshBasicMaterial color="#a9c7ae" wireframe transparent opacity={.18}/></mesh>
+      <mesh scale={1.045}><sphereGeometry args={[1, 64, 64]}/><meshBasicMaterial color="#a7dec0" transparent opacity={.07} side={THREE.BackSide}/></mesh>
+      <mesh position={marker}><sphereGeometry args={[.034, 18, 18]}/><meshBasicMaterial color="#f0713f"/></mesh>
+      <mesh position={marker.clone().multiplyScalar(.998)}><ringGeometry args={[.07, .078, 32]}/><meshBasicMaterial color="#f0713f" transparent opacity={.72} side={THREE.DoubleSide}/></mesh>
+    </group>
+  </>;
 }
 
 function Metric({value,label,featured=false}:{value:string;label:string;featured?:boolean}) { return <div className={featured ? 'featured' : ''}><strong>{value}</strong><span>{label}</span></div>; }
