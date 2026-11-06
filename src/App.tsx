@@ -10,6 +10,8 @@ const ramp = (value: number) => {
 };
 
 function App() {
+  const [intro, setIntro] = useState(true);
+  const [leavingIntro, setLeavingIntro] = useState(false);
   const [stationName, setStationName] = useState(stations[0].name);
   const [scenario, setScenario] = useState<ScenarioKey>('typical');
   const [origin, setOrigin] = useState(10);
@@ -39,7 +41,14 @@ function App() {
   const heatValues = heat.flat().map(item => item.value); const heatMin = Math.min(...heatValues); const heatMax = Math.max(...heatValues);
   const delta = forecast[6].persistence - forecast[6].model;
   const deltaLabel = delta === 0 ? 'Matches persistence' : delta > 0 ? `Model is ${delta} µg/m³ below baseline` : `Model is ${Math.abs(delta)} µg/m³ above baseline`;
-  return <main><style>{`.unit-label{margin:8px 0 12px;color:#d4e0eb;font-size:.84rem}.controls input::placeholder{color:#aebfd0;opacity:1;font-weight:400}.search-wrap{position:relative}.search-wrap:before{content:'⌕';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#c2d3e2;font-size:1.1rem}.search-wrap input{padding-left:35px}.clear-search{position:absolute;right:7px;bottom:7px;border:0;background:#29425d;color:#dbe7f1;border-radius:4px;padding:5px 8px;cursor:pointer}.result-note{font-size:.92rem}.station-dot{cursor:pointer}.station-dot:hover{box-shadow:0 0 0 5px #ffffff44}.ramp-legend{font-size:.78rem}.heatmap .selected-hour{outline:2px solid #f7fbff;outline-offset:1px;box-shadow:0 0 0 2px #08111f;z-index:1}.mini-band{height:125px;position:relative;margin:20px 0 10px;border-bottom:1px solid #4b6984;overflow:hidden}.mini-band:before{content:'';position:absolute;inset:19px 0 18px;background:linear-gradient(160deg,transparent 6%,#7dd3fc33 30%,#7dd3fc77 60%,transparent 88%);clip-path:polygon(0 47%,20% 38%,40% 26%,60% 36%,80% 20%,100% 35%,100% 75%,80% 66%,60% 80%,40% 66%,20% 72%,0 58%)}.mini-band:after{content:'';position:absolute;left:0;right:0;top:52px;height:4px;background:#7dd3fc;clip-path:polygon(0 52%,20% 43%,40% 32%,60% 44%,80% 26%,100% 40%,100% 100%,80% 100%,60% 100%,40% 100%,20% 100%,0 100%)}nav{position:sticky;top:0;z-index:20;background:#08111fee;backdrop-filter:blur(12px)}.back-top{display:inline-block;margin-top:14px;color:#7dd3fc;text-decoration:none;font-size:.85rem}@media(max-width:760px){.heatmap{gap:2px}.map-area{min-width:0}.pattern-card{overflow:hidden}.heat-hours{margin-left:31px}.back-top{font-size:.9rem}}`}</style>
+  const enterExplorer = () => {
+    setLeavingIntro(true);
+    window.setTimeout(() => {
+      setIntro(false);
+      window.requestAnimationFrame(() => document.getElementById('top')?.scrollIntoView());
+    }, 650);
+  };
+  return <main>{intro && <GlobeIntro leaving={leavingIntro} onEnter={enterExplorer}/>}<style>{`.unit-label{margin:8px 0 12px;color:#d4e0eb;font-size:.84rem}.controls input::placeholder{color:#aebfd0;opacity:1;font-weight:400}.search-wrap{position:relative}.search-wrap:before{content:'⌕';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#c2d3e2;font-size:1.1rem}.search-wrap input{padding-left:35px}.clear-search{position:absolute;right:7px;bottom:7px;border:0;background:#29425d;color:#dbe7f1;border-radius:4px;padding:5px 8px;cursor:pointer}.result-note{font-size:.92rem}.station-dot{cursor:pointer}.station-dot:hover{box-shadow:0 0 0 5px #ffffff44}.ramp-legend{font-size:.78rem}.heatmap .selected-hour{outline:2px solid #f7fbff;outline-offset:1px;box-shadow:0 0 0 2px #08111f;z-index:1}.mini-band{height:125px;position:relative;margin:20px 0 10px;border-bottom:1px solid #4b6984;overflow:hidden}.mini-band:before{content:'';position:absolute;inset:19px 0 18px;background:linear-gradient(160deg,transparent 6%,#7dd3fc33 30%,#7dd3fc77 60%,transparent 88%);clip-path:polygon(0 47%,20% 38%,40% 26%,60% 36%,80% 20%,100% 35%,100% 75%,80% 66%,60% 80%,40% 66%,20% 72%,0 58%)}.mini-band:after{content:'';position:absolute;left:0;right:0;top:52px;height:4px;background:#7dd3fc;clip-path:polygon(0 52%,20% 43%,40% 32%,60% 44%,80% 26%,100% 40%,100% 100%,80% 100%,60% 100%,40% 100%,20% 100%,0 100%)}nav{position:sticky;top:0;z-index:20;background:#08111fee;backdrop-filter:blur(12px)}.back-top{display:inline-block;margin-top:14px;color:#7dd3fc;text-decoration:none;font-size:.85rem}@media(max-width:760px){.heatmap{gap:2px}.map-area{min-width:0}.pattern-card{overflow:hidden}.heat-hours{margin-left:31px}.back-top{font-size:.9rem}}`}</style>
     <nav><a className="brand" href="#top">Delhi Air <span>Observatory</span></a><div><a href="#explore">Explorer</a><a href="#patterns">Patterns</a><a href="#method">Research notes</a></div></nav>
     <section id="top" className="hero"><div><p className="eyebrow">FIELD NOTE 01 · DELHI · 2026</p><h1>Delhi’s air is not <span style={{whiteSpace:'nowrap'}}>one number.</span></h1><p className="lede">It changes by neighbourhood and hour. This interactive research brief examines how a six-hour PM₂.₅ model compares with the simplest forecast: assuming nothing changes.</p><div className="metrics"><Metric value="31" label="Monitoring sites"/><Metric value="6 hr" label="Forecast horizon"/><Metric featured value="−25.1%" label="MAE vs persistence"/><Metric value="32.05" label="µg/m³ study MAE"/></div><p className="result-note">A model earns trust by beating a meaningful baseline—not by looking certain.</p></div><div className="hero-preview" style={{paddingTop:20,paddingBottom:20}}><p className="eyebrow">SIX-HOUR STUDY</p><strong>Forecasting, not live monitoring.</strong><div className="mini-band" style={{filter:'brightness(1.25) saturate(1.2)'}}/><small>An abstract forecast with a labelled uncertainty interval</small></div></section>
     <section id="explore" className="panel"><div className="section-title"><p className="eyebrow">STATION EXPLORER</p><h2>Explore a station</h2><p>How to read this: choose a station and forecast origin; use the map for spatial comparison, then compare the forecast with persistence below.</p></div><div className="explorer-grid"><div className="map-card"><div className="chart-heading"><span>DELHI · SCHEMATIC STATION LAYOUT</span><span className="tag">Illustrative PM₂.₅</span></div><div className="map-area">{stations.map((item) => { const value = Math.round(item.base * config.factor * hourFactor(origin)); return <button key={item.name} onClick={() => setStationName(item.name)} className={`station-dot ${item.name === station.name ? 'selected' : ''}`} style={{left:`${item.x}%`,top:`${item.y}%`, backgroundColor:ramp(value)}} aria-label={`Choose ${item.name}: ${value} micrograms per cubic metre`} title={`Click to select ${item.name}: ${value} µg/m³`} />})}<div className="map-water">Yamuna</div><div className="map-caption"><strong>{station.name}</strong><span>{station.area} · {Math.round(station.base * config.factor * hourFactor(origin))} µg/m³</span></div></div><div className="ramp-legend"><span>40</span><i/><i/><i/><span>100</span><i/><i/><span>160 µg/m³</span></div><small>Fixed 40–160 µg/m³ scale · click a dot to select a station. Values are not live or regulatory data.</small></div><div className="controls"><label>Find station<input type="search" placeholder="Search 31 stations" value={query} onChange={(e) => setQuery(e.target.value)}/></label><label>Station<select value={station.name} onChange={(e) => setStationName(e.target.value)}>{displayedStations.map((item) => <option key={item.name}>{item.name}</option>)}</select></label><label>Forecast origin <span>{String(origin).padStart(2,'0')}:00</span><input type="range" min="0" max="23" value={origin} onChange={(e) => setOrigin(Number(e.target.value))}/></label><div className="scenario-buttons">{(Object.keys(scenarios) as ScenarioKey[]).map((key) => <button className={scenario === key ? 'active' : ''} onClick={() => setScenario(key)} key={key}>{scenarios[key].label}</button>)}</div><p className="callout">The interval is an illustrative 80% uncertainty band, not a guarantee of future air quality.</p></div></div></section>
@@ -49,5 +58,23 @@ function App() {
     <footer>Delhi Air Observatory · PM₂.₅ Forecasting Research Explorer · Built by Shiven Uppal · Not for health, emergency, or regulatory decisions.<br/><a className="back-top" href="#top">Back to top ↑</a></footer>
   </main>;
 }
+function GlobeIntro({ leaving, onEnter }: { leaving: boolean; onEnter: () => void }) {
+  return <section className={`globe-intro ${leaving ? 'leaving' : ''}`} aria-label="Enter Delhi Air Observatory">
+    <div className="intro-noise" aria-hidden="true"/>
+    <header className="intro-nav"><span><i/> DELHI AIR OBSERVATORY</span><button type="button" onClick={onEnter}>Skip intro <b>↓</b></button></header>
+    <div className="globe-stage" aria-hidden="true">
+      <div className="orbit orbit-one"/><div className="orbit orbit-two"/>
+      <div className="globe"><div className="globe-grid"/><div className="continent asia"/><div className="continent india"/><div className="delhi-marker"><span/><em>Delhi</em></div></div>
+    </div>
+    <div className="intro-copy">
+      <p className="intro-kicker">PM₂.₅ · DELHI · RESEARCH EXPLORER</p>
+      <h1>One atmosphere.<br/><i>One city.</i></h1>
+      <p>Pollution moves across borders. Exposure happens on particular streets, at particular hours.</p>
+      <button type="button" className="enter-delhi" onClick={onEnter}>Enter Delhi <span>↘</span></button>
+    </div>
+    <p className="intro-caption">31 monitoring sites · six-hour forecasting study · illustrative data</p>
+  </section>
+}
+
 function Metric({value,label,featured=false}:{value:string;label:string;featured?:boolean}) { return <div className={featured ? 'featured' : ''}><strong>{value}</strong><span>{label}</span></div>; }
 export default App;
