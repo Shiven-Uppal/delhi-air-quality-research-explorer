@@ -6,7 +6,7 @@ type ScenarioKey = keyof typeof scenarios;
 const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const ramp = (value: number) => {
   const p = Math.max(0, Math.min(1, (value - 40) / 120));
-  return p < .2 ? '#b9dceb' : p < .4 ? '#e6b45b' : p < .6 ? '#d97845' : p < .8 ? '#b44c38' : '#6f2f2d';
+  return p < .16 ? '#7AD76F' : p < .32 ? '#F8C92B' : p < .50 ? '#F58220' : p < .68 ? '#EF2B46' : p < .84 ? '#552B78' : '#7D2A1F';
 };
 
 function App() {
