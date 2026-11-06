@@ -1,0 +1,9 @@
+.globe-canvas{position:absolute;inset:0;z-index:1}
+.globe-canvas canvas{width:100%!important;height:100%!important}
+.globe-fallback{position:absolute;inset:13%;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 35% 25%,#5b7967 0,#24463e 37%,#102a2c 72%,#081722 100%);box-shadow:inset -40px -26px 70px #06131aaa,0 0 75px #74b99431}
+.globe-fallback:before{content:'';position:absolute;inset:-10%;background:repeating-linear-gradient(0deg,transparent 0 26px,#d5ecdc24 27px 28px,transparent 29px 54px),repeating-linear-gradient(90deg,transparent 0 37px,#d5ecdc1a 38px 39px,transparent 40px 74px);transform:rotate(-15deg)}
+.globe-fallback i{position:absolute;right:18%;top:30%;width:47%;height:35%;opacity:.6;background:#8aa58d;clip-path:polygon(0 13%,26% 0,55% 14%,75% 8%,100% 28%,88% 52%,93% 72%,67% 66%,52% 88%,31% 75%,11% 82%,0 62%)}
+.globe-fallback b{position:absolute;right:38%;top:52%;width:9%;height:16%;background:#d7b16e;clip-path:polygon(27% 0,74% 9%,88% 33%,63% 51%,55% 100%,32% 67%,0 38%)}
+.globe-label{position:absolute;z-index:2;right:28%;top:56%;color:#f8f6ed;font:500 .62rem/1 "DM Mono",monospace;letter-spacing:.06em;text-shadow:0 1px 9px #07131b}
+.globe-label:before{content:'';display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:#e05a2c;box-shadow:0 0 0 5px #e05a2c30}
+@media(max-width:760px){.globe-label{right:34%;top:58%}}
