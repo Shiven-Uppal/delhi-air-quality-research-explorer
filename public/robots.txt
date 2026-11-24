@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://delhi-air-quality-research-explorer.vercel.app/sitemap.xml
